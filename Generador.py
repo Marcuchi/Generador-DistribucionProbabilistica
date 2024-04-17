@@ -5,8 +5,6 @@ import pyclip #Integracion del clipboard para copiar valores de las series
 import tkinter # Parte del gui
 import customtkinter #Parte del gui
 import matplotlib.pyplot as plt
-import matplotlib.figure as Figure #Graficador de histogramas
-from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,NavigationToolbar2Tk) #Integracion de matplot con tkinter
 
         # plt.title("Distribucion Normal")
         # plt.hist(lista)
@@ -14,8 +12,12 @@ from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,NavigationToolb
         # plt.ylabel("Frecuencias")
         # plt.show()
 
+def graficar(lista):
+    plt.hist(lista)
+    plt.show()
+
 def segmentacion(lista):
-    #Devuelvo una lista conformada asi [Num Intervalo,Valor Inf,Valor Sup]
+    #Devuelvo una lista conformada asi [Num Intervalo,Valor Inf,Valor Sup,Marca Clase]
     n = int(texto_muestra.get())
     intervalos = int(texto_intervalos.get())
     n_max = max(lista)
@@ -24,12 +26,13 @@ def segmentacion(lista):
     print("Numero min:",n_min)
     rango = round((n_max - n_min)/intervalos,2) + 0.01
     print("Rango:",rango)
-    lista_intervalos = [[],[],[]]
+    lista_intervalos = [[],[],[],[]]
     for i in range(0, intervalos):
         val_sup = round(n_min + rango,2)
         lista_intervalos[0].append(i + 1)
         lista_intervalos[1].append(round(n_min,2))
         lista_intervalos[2].append(val_sup)
+        lista_intervalos[3].append(round((val_sup+n_min)/2,2))
         n_min += round(rango,2)
     print("Lista de Intervalos:")
     print(lista_intervalos)
@@ -49,12 +52,13 @@ def obtener_frecuencias(lista):
             if lista[i] < lista_intervalos[2][o]:
                 frec[o] += 1
                 break
+    #Coloco en el frame de frecuencias, los valores obtenidos
     for i in range(0,q_interv):
         texto_intervalo = "[ " + str(lista_intervalos[1][i]) + "," + str(lista_intervalos[2][i]) + " )"
         customtkinter.CTkButton(frame_frecuencia, text=texto_intervalo,fg_color="#6f632d").grid(row=i,column=0,pady=5,padx=1)
         customtkinter.CTkButton(frame_frecuencia, text=frec[i],fg_color="#a68cd9").grid(row=i,column=1,pady=5,padx=1)
-    
-
+        customtkinter.CTkButton(frame_frecuencia, text=lista_intervalos[3][i],fg_color="#a68cd9").grid(row=i,column=2,pady=5,padx=1)
+   
 def generar_uniforme():
     #Destruye la lista generada anteriormente
     for widget in frame_lista.winfo_children():
@@ -195,21 +199,22 @@ texto_muestra = customtkinter.CTkEntry(master=app, placeholder_text="N (Muestra)
 texto_muestra.place(relx=0.28,rely=0.05,anchor=tkinter.NE)
 
 texto_a = customtkinter.CTkEntry(frame_grafico,placeholder_text="Valor Inicial (a)",text_color="green")
-texto_a.place(relx=0.24,rely=0.005,anchor=tkinter.NE)
+texto_a.place(relx=0.24,rely=0.015,anchor=tkinter.NE)
 
 texto_b = customtkinter.CTkEntry(frame_grafico,placeholder_text="Valor Final (b)",text_color="green")
-texto_b.place(relx=0.500,rely=0.005,anchor=tkinter.NE)
+texto_b.place(relx=0.500,rely=0.015,anchor=tkinter.NE)
 
 texto_media = customtkinter.CTkEntry(frame_grafico,placeholder_text="Media",text_color="green")
-texto_media.place(relx=0.75,rely=0.005,anchor=tkinter.NE)
+texto_media.place(relx=0.75,rely=0.015,anchor=tkinter.NE)
 
 texto_desv = customtkinter.CTkEntry(frame_grafico,placeholder_text="Desviacion estandar",text_color="green")
-texto_desv.place(relx=0.995,rely=0.005,anchor=tkinter.NE)
+texto_desv.place(relx=0.995,rely=0.015,anchor=tkinter.NE)
 
 texto_intervalos = customtkinter.CTkEntry(app,width=270,placeholder_text="Cantidad Intervalos (Enteros)",text_color="green")
 texto_intervalos.place(relx=0.2871,rely=0.14,anchor=tkinter.NE)
 
 customtkinter.CTkLabel(frame_grafico, text="Intervalo").place(relx=0.18,rely=0.12,anchor=tkinter.NE)
 customtkinter.CTkLabel(frame_grafico, text="Frecuencia Obs.").place(relx=0.45,rely=0.12,anchor=tkinter.NE)
+customtkinter.CTkLabel(frame_grafico, text="Marca Clase.").place(relx=0.67,rely=0.12,anchor=tkinter.NE)
 
 app.mainloop() # Ejecuto loop visual
