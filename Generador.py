@@ -1,57 +1,24 @@
 #Importaciones
 import random #Numeros randoms incorporados en python
 import math #Para constantes como pi
-import pyclip  #Integracion del clipboard para copiar valores de las series
+import pyclip #Integracion del clipboard para copiar valores de las series
 import tkinter # Parte del gui
 import customtkinter #Parte del gui
 import matplotlib.figure as Figure #Graficador de histogramas
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg,NavigationToolbar2Tk) #Integracion de matplot con tkinter
 
-class Distro:
-
-    def __init__(self,semilla):
-        self.semilla = semilla
-        random.seed(semilla)
-        
-
-    def uniforme(self,n,a,b):
-        print("Distribucion Uniforme")
-        for i in range(0,n):
-            rnd = random.uniform(0,1)
-            x = rnd*(b - a) + a
-            print(round(x,2))
-
-    def exponencial(self,n,media):
-        print("Distribucion Exponencial")
-        lamb = 1/media
-        for i in range(0,n):
-            rnd = random.uniform(0,1)
-            x = (math.log(1-rnd))/(-lamb)
-            print(round(x,2))
-
-    def normal(self,n):
-        print("Distribucion Normal")
-        lista = list()
-        for i in range(0,n):
-            r1 = random.uniform(0,1)
-            r2 = random.uniform(0,1)
-            z1 = math.sqrt(-2*math.log(r1))*math.sin(2*math.pi*r2)
-            z2 = math.sqrt(-2*math.log(r1))*math.cos(2*math.pi*r2)
-            print(round(z1,2))
-            print(round(z2,2))
-            lista.extend([z1,z2])
-
-        plt.title("Distribucion Normal")
-        plt.hist(lista)
-        plt.xlabel("Valores")
-        plt.ylabel("Frecuencias")
-        plt.show()
+        # plt.title("Distribucion Normal")
+        # plt.hist(lista)
+        # plt.xlabel("Valores")
+        # plt.ylabel("Frecuencias")
+        # plt.show()
 
 def graficar(lista):
     fig = Figure(figsize=(2.5,2.2))
     canvas = FigureCanvasTkAgg(figure=fig,master=frame_grafico)
     canvas.draw()
     canvas.get_tk_widget().place(relx=0.5,rely=0.5)
+
 
 def generar_uniforme():
     #Destruye la lista generada anteriormente
@@ -74,6 +41,58 @@ def generar_uniforme():
     print(lista)
     #Copia al clipboard la lista generada 
     pyclip.copy(str(lista))
+
+def generar_exponencial():
+    #Destruye la lista generada anteriormente
+    for widget in frame_lista.winfo_children():
+       widget.destroy()
+    #Obtengo los valores de cada celda de texto
+    random.seed(int(texto_semilla.get()))
+    n = int(texto_muestra.get())
+    media = int(texto_media.get())
+    lamb = 1/media
+    #Genero los numeros
+    lista = []
+    for i in range(0, n):
+        rnd = random.uniform(0, 1)
+        x = (math.log(1 - rnd)) / (-lamb)
+        print(round(x, 2))
+        customtkinter.CTkButton(frame_lista,text=x).pack(pady=10)
+        lista.append(x)
+    print(lista)
+    #Copia al clipboard la lista generada
+    pyclip.copy(str(lista))
+
+def generar_normal():
+    #Destruye la lista generada anteriormente
+    for widget in frame_lista.winfo_children():
+       widget.destroy()
+    #Obtengo los valores de cada celda de texto
+    random.seed(int(texto_semilla.get()))
+    n = int(texto_muestra.get())
+    #Genero los numeros
+    lista = []
+    #Realizo por pares en forma decreciente hasta obtener los n numeros (cada iteracion hace dos, por lo que cuando termina el loop, resto 2 en n)
+    for i in range(n,0,-2):
+        print(i)
+        r1 = random.uniform(0, 1)
+        r2 = random.uniform(0, 1)
+        z1 = math.sqrt(-2 * math.log(r1)) * math.sin(2 * math.pi * r2)
+        z2 = math.sqrt(-2 * math.log(r1)) * math.cos(2 * math.pi * r2)
+        print(round(z1, 2))
+        print(round(z2, 2))
+        customtkinter.CTkButton(frame_lista,text=z1).pack(pady=10)
+        customtkinter.CTkButton(frame_lista,text=z2).pack(pady=10)
+        #Con extend agregamos mas de 1 elemento por vez
+        lista.extend([z1, z2])
+    #Si N es impar, eliminamos el ultimo valor par obtenido
+    if n % 2 != 0:
+        frame_lista.winfo_children()[-1].destroy()
+        lista.pop(-1) #Elimina el valor del indice -1
+    print(lista)
+    #Copia al clipboard la lista generada
+    pyclip.copy(str(lista))
+
 
 def borrar():
     texto_semilla.delete(0,"end")
@@ -101,11 +120,10 @@ customtkinter.set_default_color_theme("green")
 
 app = customtkinter.CTk() #Creo ventana
 app.title("Grupo 11 - Trabajo Práctico 1 'Generador de números'")
-app.geometry("800x500") #Establezco dimensiones
-app.resizable(0,0) #Deshabilita maximizar ventana
+app.geometry("800x500")  #Establezco dimensiones
+app.resizable(0,0)  #Deshabilita maximizar ventana
 
 
-    
 #Tomo las relaciones de los pixeles en x e y de la pantalla para posicionar
 #Uso de "anclaje" el sector noroeste de la pantalla para fijar los botones
 
@@ -119,10 +137,10 @@ boton_borrar.place(relx=0.625,rely=0.165,anchor=tkinter.CENTER)
 boton_uniforme = customtkinter.CTkButton(master=app, text="Uniforme",command=generar_uniforme,height=40)
 boton_uniforme.place(relx=0.525,rely=0.05,anchor=tkinter.NE)
 
-boton_normal = customtkinter.CTkButton(master=app, text="Normal",command=generar_uniforme,height=40)
+boton_normal = customtkinter.CTkButton(master=app, text="Normal",command=generar_normal,height=40)
 boton_normal.place(relx=0.715,rely=0.05,anchor=tkinter.NE)
 
-boton_exponencial = customtkinter.CTkButton(master=app, text="Exponencial",command=generar_uniforme,height=40)
+boton_exponencial = customtkinter.CTkButton(master=app, text="Exponencial",command=generar_exponencial,height=40)
 boton_exponencial.place(relx=0.905,rely=0.05,anchor=tkinter.NE)
 
 texto_muestra = customtkinter.CTkEntry(master=app, placeholder_text="N (Muestra)",text_color="green",height=40,width=100)
@@ -142,7 +160,6 @@ texto_b.place(relx=0.640,rely=0.001,anchor=tkinter.NE)
 
 texto_media = customtkinter.CTkEntry(frame_grafico,placeholder_text="Media",text_color="green")
 texto_media.place(relx=0.98,rely=0.001,anchor=tkinter.NE)
-
 
 
 app.mainloop() # Ejecuto loop visual
