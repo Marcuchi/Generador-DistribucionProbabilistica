@@ -12,8 +12,12 @@ import matplotlib.pyplot as plt
         # plt.ylabel("Frecuencias")
         # plt.show()
 
-def graficar(lista):
-    plt.hist(lista)
+def graficar(lista_intervalos,frec):
+    fig, ax = plt.subplots()
+    plt.title("Histograma de Frecuencias")
+    plt.hist(x=lista_intervalos[3],weights=frec)
+    plt.xlabel("Marca Clase")
+    plt.ylabel("Frecuencias")
     plt.show()
 
 def segmentacion(lista):
@@ -58,7 +62,8 @@ def obtener_frecuencias(lista):
         customtkinter.CTkButton(frame_frecuencia, text=texto_intervalo,fg_color="#6f632d").grid(row=i,column=0,pady=5,padx=1)
         customtkinter.CTkButton(frame_frecuencia, text=frec[i],fg_color="#a68cd9").grid(row=i,column=1,pady=5,padx=1)
         customtkinter.CTkButton(frame_frecuencia, text=lista_intervalos[3][i],fg_color="#a68cd9").grid(row=i,column=2,pady=5,padx=1)
-   
+    return frec,lista_intervalos
+      
 def generar_uniforme():
     #Destruye la lista generada anteriormente
     for widget in frame_lista.winfo_children():
@@ -82,7 +87,8 @@ def generar_uniforme():
     print(lista)
     #Copia al clipboard la lista generada 
     pyclip.copy(str(lista))
-    obtener_frecuencias(lista)
+    frec, lista_intervalos = obtener_frecuencias(lista)
+    graficar(lista_intervalos,frec)
 
 def generar_exponencial():
     #Destruye la lista generada anteriormente
@@ -100,12 +106,13 @@ def generar_exponencial():
         x = (math.log(1 - rnd)) / (-lamb)
         x = round(x,2)
         print(x)
-        customtkinter.CTkButton(frame_lista,text=x).pack(pady=10)
+        customtkinter.CTkLabel(frame_lista,text=x).pack(pady=10)
         lista.append(x)
     print(lista)
     #Copia al clipboard la lista generada
     pyclip.copy(str(lista))
-    obtener_frecuencias(lista)
+    frec, lista_intervalos = obtener_frecuencias(lista)
+    graficar(lista_intervalos,frec)
 
 def generar_normal(): #Metodo Box-Muller
     #Destruye la lista generada anteriormente
@@ -130,8 +137,8 @@ def generar_normal(): #Metodo Box-Muller
         
         print("Valor de z",i,":",z1)
         print("Valor de z",i+1,":",z2)
-        customtkinter.CTkButton(frame_lista,text=z1).pack(pady=10)
-        customtkinter.CTkButton(frame_lista,text=z2).pack(pady=10)
+        customtkinter.CTkLabel(frame_lista,text=z1).pack(pady=10)
+        customtkinter.CTkLabel(frame_lista,text=z2).pack(pady=10)
         #Con extend agregamos mas de 1 elemento por vez
         lista.extend([z1, z2])
     #Si N es impar, eliminamos el ultimo valor par obtenido
@@ -142,7 +149,8 @@ def generar_normal(): #Metodo Box-Muller
     print(lista)
     #Copia al clipboard la lista generada
     pyclip.copy(str(lista))
-    obtener_frecuencias(lista)
+    frec, lista_intervalos = obtener_frecuencias(lista)
+    graficar(lista_intervalos,frec)
 
 def borrar():
     texto_semilla.delete(0,"end")
@@ -213,6 +221,7 @@ texto_desv.place(relx=0.995,rely=0.015,anchor=tkinter.NE)
 texto_intervalos = customtkinter.CTkEntry(app,width=270,placeholder_text="Cantidad Intervalos (Enteros)",text_color="green")
 texto_intervalos.place(relx=0.2871,rely=0.14,anchor=tkinter.NE)
 
+#Labels de texto
 customtkinter.CTkLabel(frame_grafico, text="Intervalo").place(relx=0.18,rely=0.12,anchor=tkinter.NE)
 customtkinter.CTkLabel(frame_grafico, text="Frecuencia Obs.").place(relx=0.45,rely=0.12,anchor=tkinter.NE)
 customtkinter.CTkLabel(frame_grafico, text="Marca Clase.").place(relx=0.67,rely=0.12,anchor=tkinter.NE)
