@@ -167,6 +167,18 @@ def borrar():
     for widget in frame_frecuencia.winfo_children():
        widget.destroy()
 
+def rellenar_random():
+    #Relleno los valores de los textos de forma rapida y aleatoria
+    borrar()
+    texto_semilla.insert(0,random.randint(0,10))
+    texto_muestra.insert(0,random.randint(0,500))
+    texto_a.insert(0,random.randint(0,100))
+    texto_b.insert(0,random.randint(0,100))
+    texto_media.insert(0,random.randint(1,100))
+    texto_desv.insert(0,random.randint(1,100))
+    texto_intervalos.insert(0,random.randint(0,20))
+
+
 #Gui 
 customtkinter.set_appearance_mode("DARK")
 customtkinter.set_default_color_theme("green")
@@ -189,24 +201,27 @@ frame_frecuencia = customtkinter.CTkScrollableFrame(master=frame_grafico,width=5
 frame_frecuencia.place(relx=0.5, rely=0.6, anchor=tkinter.CENTER)
 
 #Botones
-boton_borrar = customtkinter.CTkButton(master=app, text="Borrar",command=borrar,height=25,width=590,fg_color="gray",text_color="black")
-boton_borrar.place(relx=0.653,rely=0.165,anchor=tkinter.CENTER)
+boton_borrar = customtkinter.CTkButton(master=app, text="Borrar",command=borrar,height=25,width=597,fg_color="gray",text_color="black")
+boton_borrar.place(relx=0.651,rely=0.165,anchor=tkinter.CENTER)
 
 boton_uniforme = customtkinter.CTkButton(master=app, text="Uniforme",command=generar_uniforme,height=40)
-boton_uniforme.place(relx=0.525,rely=0.05,anchor=tkinter.NE)
+boton_uniforme.place(relx=0.509,rely=0.05,anchor=tkinter.NE)
 
 boton_normal = customtkinter.CTkButton(master=app, text="Normal",command=generar_normal,height=40)
-boton_normal.place(relx=0.715,rely=0.05,anchor=tkinter.NE)
+boton_normal.place(relx=0.655,rely=0.05,anchor=tkinter.NE)
 
 boton_exponencial = customtkinter.CTkButton(master=app, text="Exponencial",command=generar_exponencial,height=40)
-boton_exponencial.place(relx=0.905,rely=0.05,anchor=tkinter.NE)
+boton_exponencial.place(relx=0.805,rely=0.05,anchor=tkinter.NE)
+
+boton_random = customtkinter.CTkButton(master=app, text="Random",command=rellenar_random,height=40,width=100,fg_color='gray')
+boton_random.place(relx=0.920,rely=0.05,anchor=tkinter.NE)
 
 #Textos
 texto_semilla = customtkinter.CTkEntry(app,width=100,height=40,placeholder_text="Semilla...",text_color="green")
 texto_semilla.place(relx=0.133,rely=0.05,anchor=tkinter.NE)
 
-texto_muestra = customtkinter.CTkEntry(master=app, placeholder_text="N (Muestra)",text_color="green",height=40,width=100)
-texto_muestra.place(relx=0.28,rely=0.05,anchor=tkinter.NE)
+texto_muestra = customtkinter.CTkEntry(master=app, placeholder_text="N (Muestra)",text_color="green",height=40,width=160)
+texto_muestra.place(relx=0.285,rely=0.05,anchor=tkinter.NE)
 
 texto_a = customtkinter.CTkEntry(frame_grafico,placeholder_text="Valor Inicial (a)",text_color="green")
 texto_a.place(relx=0.24,rely=0.015,anchor=tkinter.NE)
@@ -227,5 +242,10 @@ texto_intervalos.place(relx=0.2871,rely=0.14,anchor=tkinter.NE)
 customtkinter.CTkLabel(frame_grafico, text="Intervalo").place(relx=0.18,rely=0.12,anchor=tkinter.NE)
 customtkinter.CTkLabel(frame_grafico, text="Frecuencia Obs.").place(relx=0.45,rely=0.12,anchor=tkinter.NE)
 customtkinter.CTkLabel(frame_grafico, text="Marca Clase.").place(relx=0.67,rely=0.12,anchor=tkinter.NE)
+
+#Labels de aclaracaion
+customtkinter.CTkLabel(app, text="Uniforme: Intervalo a-b").place(relx=0.509,rely=0.93,anchor=tkinter.NE)
+customtkinter.CTkLabel(app, text="Normal: Media y Desv Std.").place(relx=0.680,rely=0.93,anchor=tkinter.NE)
+customtkinter.CTkLabel(app, text="Exponencial: Media").place(relx=0.805,rely=0.93,anchor=tkinter.NE)
 
 app.mainloop() # Ejecuto loop visual
