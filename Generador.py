@@ -1,4 +1,4 @@
-#Importaciones
+# Importaciones
 import random #Numeros randoms incorporados en python
 import math #Para constantes como pi
 import pyclip #Integracion del clipboard para copiar valores de las series
@@ -6,16 +6,11 @@ import tkinter # Parte del gui
 import customtkinter #Parte del gui
 import matplotlib.pyplot as plt
 
-        # plt.title("Distribucion Normal")
-        # plt.hist(lista)
-        # plt.xlabel("Valores")
-        # plt.ylabel("Frecuencias")
-        # plt.show()
-
-def graficar(lista_intervalos,frec):
-    fig, ax = plt.subplots()
+def graficar(lista,lista_intervalos):
+    plt.close() #Por si queremos graficos nuevos x cada generacion
     plt.title("Histograma de Frecuencias")
-    plt.hist(x=lista_intervalos[3],weights=frec)
+    print("Intervalos Totales:",lista_intervalos[2])
+    plt.hist(lista,bins=lista_intervalos[2],color="lightgrey", ec="orange")
     plt.xlabel("Marca Clase")
     plt.ylabel("Frecuencias")
     plt.show()
@@ -38,8 +33,8 @@ def segmentacion(lista):
         lista_intervalos[2].append(val_sup)
         lista_intervalos[3].append(round((val_sup+n_min)/2,2))
         n_min += round(rango,2)
-    print("Lista de Intervalos:")
-    print(lista_intervalos)
+    # print("Lista de Intervalos:")
+    # print(lista_intervalos)
     return lista_intervalos
 
 def obtener_frecuencias(lista):
@@ -74,21 +69,22 @@ def generar_uniforme():
     a = int(texto_a.get())
     b = int(texto_b.get())
     #Genero los numeros
-    print("Valores generados: ")
     lista = []
     for i in range(0,n):
         rnd = random.uniform(0,1)
         x = rnd*(b - a) + a
         x = round(x,2)
-        print(x)
         customtkinter.CTkLabel(frame_lista,text=x).pack(pady=2)
         lista.append(x)
     print("Lista generada: ")
     print(lista)
     #Copia al clipboard la lista generada 
-    pyclip.copy(str(lista))
-    frec, lista_intervalos = obtener_frecuencias(lista)
-    graficar(lista_intervalos,frec)
+    lista_a_copiar = "\n".join(map(str,lista))
+    pyclip.copy(lista_a_copiar)
+    _ , lista_intervalos = obtener_frecuencias(lista)
+    #Como necesito una lista con valores de todos los intervalos, solo agrego el faltante de los inferiores o superiores al contrario y lo uso
+    lista_intervalos[2].insert(0,lista_intervalos[1][0])
+    graficar(lista,lista_intervalos)
 
 def generar_exponencial():
     #Destruye la lista generada anteriormente
@@ -105,14 +101,17 @@ def generar_exponencial():
         rnd = random.uniform(0, 1)
         x = (math.log(1 - rnd)) / (-lamb)
         x = round(x,2)
-        print(x)
         customtkinter.CTkLabel(frame_lista,text=x).pack(pady=10)
         lista.append(x)
+    print("Lista generada:")
     print(lista)
     #Copia al clipboard la lista generada
-    pyclip.copy(str(lista))
-    frec, lista_intervalos = obtener_frecuencias(lista)
-    graficar(lista_intervalos,frec)
+    lista_a_copiar = "\n".join(map(str,lista))
+    pyclip.copy(lista_a_copiar)
+    _ , lista_intervalos = obtener_frecuencias(lista)
+    #Como necesito una lista con valores de todos los intervalos, solo agrego el faltante de los inferiores o superiores al contrario y lo uso
+    lista_intervalos[2].insert(0,lista_intervalos[1][0])
+    graficar(lista,lista_intervalos)
 
 def generar_normal(): #Metodo Box-Muller
     #Destruye la lista generada anteriormente
@@ -148,9 +147,12 @@ def generar_normal(): #Metodo Box-Muller
     print("Lista generada: ")
     print(lista)
     #Copia al clipboard la lista generada
-    pyclip.copy(str(lista))
-    frec, lista_intervalos = obtener_frecuencias(lista)
-    graficar(lista_intervalos,frec)
+    lista_a_copiar = "\n".join(map(str,lista))
+    pyclip.copy(lista_a_copiar)
+    _ , lista_intervalos = obtener_frecuencias(lista)
+    #Como necesito una lista con valores de todos los intervalos, solo agrego el faltante de los inferiores o superiores al contrario y lo uso
+    lista_intervalos[2].insert(0,lista_intervalos[1][0])
+    graficar(lista,lista_intervalos)
 
 def borrar():
     texto_semilla.delete(0,"end")
