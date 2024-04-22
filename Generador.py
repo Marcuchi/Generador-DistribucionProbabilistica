@@ -176,7 +176,7 @@ def rellenar_random():
     texto_b.insert(0,random.randint(0,100))
     texto_media.insert(0,random.randint(1,100))
     texto_desv.insert(0,random.randint(1,100))
-    texto_intervalos.insert(0,random.randint(0,20))
+    texto_intervalos.insert(0,random.randint(1,20))
 
 
 #Gui 
