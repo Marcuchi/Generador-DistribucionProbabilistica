@@ -11,6 +11,7 @@ def graficar(lista,lista_intervalos):
     plt.title("Histograma de Frecuencias")
     print("Intervalos Totales:",lista_intervalos[2])
     plt.hist(lista,bins=lista_intervalos[2],color="lightgrey", ec="orange")
+    plt.xticks(lista_intervalos[1]) 
     plt.xlabel("Marca Clase")
     plt.ylabel("Frecuencias")
     plt.show()
