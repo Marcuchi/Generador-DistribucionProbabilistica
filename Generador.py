@@ -6,18 +6,35 @@ import tkinter # Parte del gui
 import customtkinter #Parte del gui
 import matplotlib.pyplot as plt
 
-def graficar(lista,lista_intervalos):
-    plt.close() #Por si queremos graficos nuevos x cada generacion
+
+def graficar(frec,lista_intervalos):
+    plt.close()
+    plt.ioff()
     plt.title("Histograma de Frecuencias")
-    print("Intervalos Totales:",lista_intervalos[2])
-    plt.hist(lista,bins=lista_intervalos[2],color="lightgrey", ec="orange")
-    plt.xticks(lista_intervalos[1]) 
-    plt.xlabel("Marca Clase")
+    rango = lista_intervalos[3][2] - lista_intervalos[3][1]
+    plt.bar(lista_intervalos[3],frec,width=rango,color="lightgrey", ec="orange")
+    plt.xticks(lista_intervalos[2])    
+    plt.xlabel("Intervalos")
     plt.ylabel("Frecuencias")
     plt.show()
+    #plt.savefig('plot.png') Guardar imagen x si acaso
+
+def agregar_numeros(frame, lista, indice):
+    #Tenemos un indice, un tiempo de espera y conjunto de datos a cargar
+    #Debido a la alta carga para el procesador de colocar tantos elementos a la vez para n > 10.000, se utiliza cargas x lote de a 10
+    for i in range(10):
+        if indice < len(lista):
+            #Se crea labels hasta cumplir el primer conjunto
+            elemento = lista[indice]
+            customtkinter.CTkLabel(frame, text=elemento).pack()
+            indice += 1
+        #Utilizamos "after", una funcion de tkinter que llama a una funcion con sus variables despues de un tiempo en milisegundos "100" 
+    if indice < len(lista):
+        #Si aun el indice es menor a la cantidad de datos, sigue activando la funcion hasta que termine, gracias a after TKINTER despues de un tiempo
+        frame.after(100, agregar_numeros, frame, lista, indice)
 
 def segmentacion(lista):
-    #Devuelvo una lista conformada asi [Num Intervalo,Valor Inf,Valor Sup,Marca Clase]
+    #Devuelvo una lista conformada con otras listas asi -> [Num Intervalo,Valor Inf,Valor Sup,Marca Clase]
     n = int(texto_muestra.get())
     intervalos = int(texto_intervalos.get())
     n_max = max(lista)
@@ -47,17 +64,26 @@ def obtener_frecuencias(lista):
     n = int(texto_muestra.get())
     #Creo una lista vacia de valores de frecuencia, 1 x cada intervalo
     frec = [0] * q_interv
+    frec_acum = [0] * q_interv #Lista de frec Acumulada
+    acum = 0 #acumulador
+    #Reviso numero x numero
     for i in range(0,n):
+        #Reviso Intervalo x intervalo
         for o in range(0,q_interv):
+            #Si el valor es mayor al intervalo superior revisando, paso al otro intervalo, sino sumo uno en frecuencia
             if lista[i] < lista_intervalos[2][o]:
                 frec[o] += 1
                 break
+    for i in range(0,len(frec)):
+        acum += frec[i]
+        frec_acum[i]= acum
     #Coloco en el frame de frecuencias, los valores obtenidos
     for i in range(0,q_interv):
         texto_intervalo = "[ " + str(lista_intervalos[1][i]) + "," + str(lista_intervalos[2][i]) + " )"
         customtkinter.CTkButton(frame_frecuencia, text=texto_intervalo,fg_color="#6f632d").grid(row=i,column=0,pady=5,padx=1)
         customtkinter.CTkButton(frame_frecuencia, text=frec[i],fg_color="#a68cd9").grid(row=i,column=1,pady=5,padx=1)
         customtkinter.CTkButton(frame_frecuencia, text=lista_intervalos[3][i],fg_color="#a68cd9").grid(row=i,column=2,pady=5,padx=1)
+        customtkinter.CTkButton(frame_frecuencia, text=frec_acum[i],fg_color="#5f4758").grid(row=i,column=3,pady=5,padx=1)
     return frec,lista_intervalos
       
 def generar_uniforme():
@@ -75,17 +101,17 @@ def generar_uniforme():
         rnd = random.uniform(0,1)
         x = rnd*(b - a) + a
         x = round(x,2)
-        customtkinter.CTkLabel(frame_lista,text=x).pack(pady=2)
         lista.append(x)
+    agregar_numeros(frame_lista, lista,0)
     print("Lista generada: ")
     print(lista)
     #Copia al clipboard la lista generada 
     lista_a_copiar = "\n".join(map(str,lista))
     pyclip.copy(lista_a_copiar)
-    _ , lista_intervalos = obtener_frecuencias(lista)
+    frec , lista_intervalos = obtener_frecuencias(lista)
     #Como necesito una lista con valores de todos los intervalos, solo agrego el faltante de los inferiores o superiores al contrario y lo uso
     lista_intervalos[2].insert(0,lista_intervalos[1][0])
-    graficar(lista,lista_intervalos)
+    graficar(frec,lista_intervalos)
 
 def generar_exponencial():
     #Destruye la lista generada anteriormente
@@ -102,17 +128,17 @@ def generar_exponencial():
         rnd = random.uniform(0, 1)
         x = (math.log(1 - rnd)) / (-lamb)
         x = round(x,2)
-        customtkinter.CTkLabel(frame_lista,text=x).pack(pady=10)
         lista.append(x)
+    agregar_numeros(frame_lista, lista,0)
     print("Lista generada:")
     print(lista)
     #Copia al clipboard la lista generada
     lista_a_copiar = "\n".join(map(str,lista))
     pyclip.copy(lista_a_copiar)
-    _ , lista_intervalos = obtener_frecuencias(lista)
+    frec , lista_intervalos = obtener_frecuencias(lista)
     #Como necesito una lista con valores de todos los intervalos, solo agrego el faltante de los inferiores o superiores al contrario y lo uso
     lista_intervalos[2].insert(0,lista_intervalos[1][0])
-    graficar(lista,lista_intervalos)
+    graficar(frec,lista_intervalos)
 
 def generar_normal(): #Metodo Box-Muller
     #Destruye la lista generada anteriormente
@@ -137,23 +163,23 @@ def generar_normal(): #Metodo Box-Muller
         
         print("Valor de z",i,":",z1)
         print("Valor de z",i+1,":",z2)
-        customtkinter.CTkLabel(frame_lista,text=z1).pack(pady=10)
-        customtkinter.CTkLabel(frame_lista,text=z2).pack(pady=10)
         #Con extend agregamos mas de 1 elemento por vez
-        lista.extend([z1, z2])
+        lista.extend([z1, z2])    
     #Si N es impar, eliminamos el ultimo valor par obtenido
     if n % 2 != 0:
-        frame_lista.winfo_children()[-1].destroy()
+        #Se tuvo que acomodar ya que ahora al ser por lotes, el ultimo frame no esta creado hasta un buen tiempo
+        #frame_lista.winfo_children()[-1].destroy() 
         lista.pop(-1) #Elimina el valor del indice -1
+    agregar_numeros(frame_lista, lista,0)
     print("Lista generada: ")
     print(lista)
     #Copia al clipboard la lista generada
     lista_a_copiar = "\n".join(map(str,lista))
     pyclip.copy(lista_a_copiar)
-    _ , lista_intervalos = obtener_frecuencias(lista)
+    frec , lista_intervalos = obtener_frecuencias(lista)
     #Como necesito una lista con valores de todos los intervalos, solo agrego el faltante de los inferiores o superiores al contrario y lo uso
     lista_intervalos[2].insert(0,lista_intervalos[1][0])
-    graficar(lista,lista_intervalos)
+    graficar(frec,lista_intervalos)
 
 def borrar():
     texto_semilla.delete(0,"end")
@@ -243,6 +269,7 @@ texto_intervalos.place(relx=0.2871,rely=0.14,anchor=tkinter.NE)
 customtkinter.CTkLabel(frame_grafico, text="Intervalo").place(relx=0.18,rely=0.12,anchor=tkinter.NE)
 customtkinter.CTkLabel(frame_grafico, text="Frecuencia Obs.").place(relx=0.45,rely=0.12,anchor=tkinter.NE)
 customtkinter.CTkLabel(frame_grafico, text="Marca Clase.").place(relx=0.67,rely=0.12,anchor=tkinter.NE)
+customtkinter.CTkLabel(frame_grafico, text="Frec Acum.").place(relx=0.915,rely=0.12,anchor=tkinter.NE)
 
 #Labels de aclaracaion
 customtkinter.CTkLabel(app, text="Uniforme: Intervalo a-b").place(relx=0.509,rely=0.93,anchor=tkinter.NE)
