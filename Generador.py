@@ -49,7 +49,7 @@ def segmentacion(lista):
     print("Rango:",round(rango,4))
     lista_intervalos = [[],[],[],[]]
     for i in range(0, intervalos):
-        val_sup = round(n_min + rango,2)
+        val_sup = round(n_min + rango,4)
         lista_intervalos[0].append(i + 1)
         lista_intervalos[1].append(round(n_min,4))
         lista_intervalos[2].append(val_sup)
