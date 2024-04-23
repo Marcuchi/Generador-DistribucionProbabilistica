@@ -4,20 +4,22 @@ import math #Para constantes como pi
 import pyclip #Integracion del clipboard para copiar valores de las series
 import tkinter # Parte del gui
 import customtkinter #Parte del gui
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt #Graficador
 
 
 def graficar(frec,lista_intervalos):
     plt.close()
     plt.ioff()
     plt.title("Histograma de Frecuencias")
-    print(lista_intervalos)
     if len(lista_intervalos[0]) > 0:
-        rango = lista_intervalos[2][1] - lista_intervalos[2][0]
+        rango = round(lista_intervalos[2][1] - lista_intervalos[2][0],2)
         plt.bar(lista_intervalos[3],frec,width=rango,color="lightgrey", ec="orange")
     plt.xticks(lista_intervalos[2])    
     plt.xlabel("Intervalos")
     plt.ylabel("Frecuencias")
+    #Se agregan labels relacionados al valor de cada intervalo en el grafico
+    for i in range(len(lista_intervalos[3])):
+        plt.text(lista_intervalos[3][i],frec[i],s=frec[i],color= 'Green')
     plt.show()
     #plt.savefig('plot.png') Guardar imagen x si acaso
 
@@ -43,16 +45,16 @@ def segmentacion(lista):
     n_min = min(lista)
     print("Numero max:",n_max)
     print("Numero min:",n_min)
-    rango = round((n_max - n_min)/intervalos,2) + 0.01
-    print("Rango:",rango)
+    rango = round((n_max - n_min)/intervalos,4) + 0.0001
+    print("Rango:",round(rango,4))
     lista_intervalos = [[],[],[],[]]
     for i in range(0, intervalos):
         val_sup = round(n_min + rango,2)
         lista_intervalos[0].append(i + 1)
-        lista_intervalos[1].append(round(n_min,2))
+        lista_intervalos[1].append(round(n_min,4))
         lista_intervalos[2].append(val_sup)
-        lista_intervalos[3].append(round((val_sup+n_min)/2,2))
-        n_min += round(rango,2)
+        lista_intervalos[3].append(round((val_sup+n_min)/2,4))
+        n_min += round(rango,4)
     # print("Lista de Intervalos:")
     # print(lista_intervalos)
     return lista_intervalos
@@ -102,7 +104,7 @@ def generar_uniforme():
     for i in range(0,n):
         rnd = random.uniform(0,1)
         x = rnd*(b - a) + a
-        x = round(x,2)
+        x = round(x,4)
         lista.append(x)
     agregar_numeros(frame_lista, lista,0)
     print("Lista generada: ")
@@ -129,7 +131,7 @@ def generar_exponencial():
     for i in range(0, n):
         rnd = random.uniform(0, 1)
         x = (math.log(1 - rnd)) / (-lamb)
-        x = round(x,2)
+        x = round(x,4)
         lista.append(x)
     agregar_numeros(frame_lista, lista,0)
     print("Lista generada:")
@@ -160,8 +162,8 @@ def generar_normal(): #Metodo Box-Muller
         z1 = (math.sqrt(-2 * math.log(r1)) * math.sin(2 * math.pi * r2)) * desv + media
         z2 = math.sqrt(-2 * math.log(r1)) * math.cos(2 * math.pi * r2) * desv + media
         
-        z1 = round(z1,2)
-        z2 = round(z2,2)
+        z1 = round(z1,4)
+        z2 = round(z2,4)
         
         print("Valor de z",i,":",z1)
         print("Valor de z",i+1,":",z2)
