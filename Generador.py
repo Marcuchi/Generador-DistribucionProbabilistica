@@ -11,8 +11,10 @@ def graficar(frec,lista_intervalos):
     plt.close()
     plt.ioff()
     plt.title("Histograma de Frecuencias")
-    rango = lista_intervalos[3][2] - lista_intervalos[3][1]
-    plt.bar(lista_intervalos[3],frec,width=rango,color="lightgrey", ec="orange")
+    print(lista_intervalos)
+    if len(lista_intervalos[0]) > 0:
+        rango = lista_intervalos[2][1] - lista_intervalos[2][0]
+        plt.bar(lista_intervalos[3],frec,width=rango,color="lightgrey", ec="orange")
     plt.xticks(lista_intervalos[2])    
     plt.xlabel("Intervalos")
     plt.ylabel("Frecuencias")
