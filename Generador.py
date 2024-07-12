@@ -165,8 +165,6 @@ def generar_normal(): #Metodo Box-Muller
         z1 = round(z1,4)
         z2 = round(z2,4)
         
-        print("Valor de z",i,":",z1)
-        print("Valor de z",i+1,":",z2)
         #Con extend agregamos mas de 1 elemento por vez
         lista.extend([z1, z2])    
     #Si N es impar, eliminamos el ultimo valor par obtenido
@@ -215,7 +213,7 @@ customtkinter.set_appearance_mode("DARK")
 customtkinter.set_default_color_theme("green")
 
 app = customtkinter.CTk() #Creo ventana
-app.title("Grupo 11 - Trabajo Práctico 1 'Generador de números'")
+app.title("Generador de números")
 app.geometry("1100x500")  #Establezco dimensiones
 app.resizable(0,0)  #Deshabilita maximizar ventana
 
